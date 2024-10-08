@@ -1,111 +1,89 @@
-
-    
-    
-
-
-const clearButton = document.querySelector(".clear");
 const display = document.querySelector("#display");
 const numbers = document.querySelectorAll(".operand");
+const decimal = document.querySelector(".decimal");
 const operators = document.querySelectorAll(".operator");
+const clearButton = document.querySelector(".clear");
+const equalButton = document.querySelector(".equals");
 
-  
-let firstNumber ="";
-    let operatorion = "";
-    let secNumber = "";
-    let displayValue = '0';
-    
-    
+let firstNumber = "";
+let secNumber = "";
+let operatorSign = "";
 
-
+const output = () => {
+    display.textContent = firstNumber;
+};
 
 numbers.forEach(number => {
-number.addEventListener("click",() => {
-  display.textContent += number.value
-  if(operator ==="") {
-    firstNumber +=display.textContent;
-    
-  }
-  else {
-    secNumber += display.textContent
-    
-  }
-  
-}
-)});
-
-
-operators.forEach(op => {
-  op.addEventListener("click", () => {
-    let result = operate(firstNumber,operators,secNumber);
-    display.textContent = result
-  }
-)});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-clearButton.addEventListener("click", () => {
-    display.textContent ="";
+    number.addEventListener("click", () => {
+        firstNumber += number.textContent;
+        output();
+    });
 });
 
-   
-
-
-
-
-
-function operate(operand1,operator,operand2){
-    if(operator ==="+"){
-        result = add(operand1,operand2); 
-        return result;
+decimal.addEventListener("click", () => {
+    
+    if (!firstNumber.includes(".")) {
+        firstNumber += ".";
+        output();
     }
-    else if(operator ==="-"){
-      return subtract(operand1,operand2);
-    }
-    else if(operator ==="/") {
-      return division(operand1,operand2);
-    }
-    else if(operator ==="*") {
-      return multiply(operand1,operand2);
-    }
-    }
+});
 
-    
+operators.forEach(operator => {
+    operator.addEventListener("click", () => {
+        
+        if (firstNumber === "") {
+            return;
+        }
 
+        if (firstNumber !== "") {
+            operate();
+        }
 
-
-
-    
-    const add = function(a,b) {
-      return a +b;
-    };
-    
-    const subtract = function(a,b) {
-      return a - b;
-    };
-    
-    
-    
-    const multiply = function(array) {
-      let number =1;
-        array.forEach(element => {
-            number = number * element;
+        operatorSign = operator.textContent;
+        secNumber = firstNumber;
+        firstNumber = "";
     });
-        return number;
-    };
-    
-    const division = function(a,b) {
-        return a/b;
+});
+
+const operate = () => {
+    let result;
+    const prev = Number(secNumber);
+    const current = Number(firstNumber);
+
+    switch (operatorSign) {
+        case "+":
+            result = prev + current;
+            break;
+        case "-":
+            result = prev - current;
+            break;
+        case "*":
+            result = prev * current;
+            break
+        case "/":
+            if (current === 0) {
+                
+                display.textContent = "Cannot divide by zero!";
+                return;
+            } else {
+                result = prev / current;
+                break;
+            }
+        default:
+            return;
     }
-    
+
+    firstNumber = +result.toFixed(2); 
+    operatorSign = "";
+    secNumber = "";
+    output();
+};
+
+clearButton.addEventListener("click", () => {
+    firstNumber = "";
+    secNumber = "";
+    operatorSign = "";
+    output();
+});
+
+equalButton.addEventListener("click", operate);
